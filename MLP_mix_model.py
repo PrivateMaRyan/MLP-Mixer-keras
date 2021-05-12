@@ -63,15 +63,15 @@ class MLPLayer():
         return x
     
 def built_mlp_model(input_shape, mlp_depth, expand_ratio, patch_size, channels, num_classes = 1000):
-        input_tensor = Input(input_shape)
-        img_h = input_shape[0]
-        assert (img_h % patch_size == 0), "input image size must be devided evenly by patch_size!"
-        assert (math.sqrt(channel) %1 == 0), "channels must be perfect square!"
-        
-        x = Conv2D(channels, kernel_size = (patch_size, patch_size), strides= (patch_size, patch_size))(input_tensor)
-        for i in range(mlp_depth):
-            x = MLPLayer(i, expand_ratio)(x)
-        x = GlobalAveragePooling2D()(x)
-        x = Dense(num_classes, activation = "softmax")(x)
-        model = Model(input_tensor, x, name = "MLP-model")
-        return model
+    input_tensor = Input(input_shape)
+    img_h = input_shape[0]
+    assert (img_h % patch_size == 0), "input image size must be devided evenly by patch_size!"
+    assert (math.sqrt(channel) %1 == 0), "channels must be perfect square!"
+
+    x = Conv2D(channels, kernel_size = (patch_size, patch_size), strides= (patch_size, patch_size))(input_tensor)
+    for i in range(mlp_depth):
+        x = MLPLayer(i, expand_ratio)(x)
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(num_classes, activation = "softmax")(x)
+    model = Model(input_tensor, x, name = "MLP-model")
+    return model
