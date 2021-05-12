@@ -4,4 +4,4 @@
 
 paper link : https://arxiv.org/abs/2105.01601
 
-Implementation in MLP in Convolution ways, and there seems nothing new in this paper.
+Implementation in MLP in Convolution ways, and there seems not to much new thing in this paper.
