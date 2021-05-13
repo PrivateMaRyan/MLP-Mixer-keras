@@ -4,4 +4,4 @@
 
 paper link : https://arxiv.org/abs/2105.01601
 
-Implementation of MLP-mixer in Convolution ways, and there seems not to much things new in this paper.
+Implementation of MLP-mixer in Convolution ways, and there seems not too much things new in this paper.
