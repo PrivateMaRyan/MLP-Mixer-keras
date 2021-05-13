@@ -19,7 +19,6 @@ class ChannelMixBlock():
     def __init__(self, name, expand_ratio = 2):
         self.name = "chnmix_{}".format(name)
         self.expand_ratio = expand_ratio
-        
     def __call__(self, x):
         _, h, w, c = K.int_shape(x)
         y = x
@@ -40,15 +39,15 @@ class TokenMixBlock():
         new_channel = int(math.sqrt(c))
         y = x
         x = LayerNormalization()(x)
-        x = Reshape((h * w, c))(x)
-        x = Lambda(tf.transpose, arguments={"perm": [0, 2, 1]})(x)
-        x = Reshape((new_channel, new_channel, h*w))(x)
+        x = Reshape((h * w, c), name = self.name + "_reshape1")(x)
+        x = Permute([1, 0], name = self.name + "_permute1")(x)
+        x = Reshape((new_channel, new_channel, h*w), name = self.name + "_reshape2")(x)
         x = Conv2D(h * w * self.expand_ratio, (1, 1), name = self.name + "_fc1")(x)
         x = Activation("gelu", name = self.name + "_activation")(x)
         x = Conv2D(h * w, (1, 1), name = self.name + "_fc2")(x)
-        x = Reshape((c, h *w ))(x)
-        x = Lambda(tf.transpose, arguments={"perm": [0, 2, 1]})(x)
-        x = Reshape((h, w, c))(x)
+        x = Reshape((c, h *w ), name = self.name + "_reshape3")(x)
+        x = Permute([1, 0], name = self.name + "_permute2")(x)
+        x = Reshape((h, w, c), name = self.name + "_reshape4")(x)
         x = Add(name = self.name + "_add")([x, y])
         return x
 
@@ -68,7 +67,7 @@ def built_mlp_model(input_shape, mlp_depth, expand_ratio, patch_size, channels, 
     assert (img_h % patch_size == 0), "input image size must be devided evenly by patch_size!"
     assert (math.sqrt(channel) %1 == 0), "channels must be perfect square!"
 
-    x = Conv2D(channels, kernel_size = (patch_size, patch_size), strides= (patch_size, patch_size))(input_tensor)
+    x = Conv2D(channels, kernel_size = (patch_size, patch_size), strides= (patch_size, patch_size), name = "pre-patches")(input_tensor)
     for i in range(mlp_depth):
         x = MLPLayer(i, expand_ratio)(x)
     x = GlobalAveragePooling2D()(x)
